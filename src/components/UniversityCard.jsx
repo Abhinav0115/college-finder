@@ -24,12 +24,15 @@ export default function UniversityCard({ uni, darkMode }) {
                 <p
                     className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}
                 >
-                    Domains: {uni.domains.join(", ")}
+                    Domains:{" "}
+                    {Array.isArray(uni.domains)
+                        ? uni.domains.join(", ")
+                        : "N/A"}
                 </p>
             </div>
             <div className="mt-4 flex justify-end">
                 <a
-                    href={uni.web_pages[0]}
+                    href={uni.web_pages}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`w-full text-center inline-block font-semibold shadow transition px-4 py-2 rounded-lg text-white ${darkMode ? "bg-cyan-700 hover:bg-teal-800" : "bg-cyan-600 hover:bg-teal-700"}`}

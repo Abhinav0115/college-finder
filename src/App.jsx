@@ -21,32 +21,40 @@ function App() {
         }
     }, [darkMode]);
 
-    // Fetch universities from the public API based on search params
+    // Fetch universities from Netlify function (acts as a proxy)
     const fetchUniversities = async ({ country, name, sortBy }) => {
         setLoading(true);
         setHasSearched(true);
+
         try {
             const params = {};
             if (country) params.country = country;
             if (name) params.name = name;
 
-            // Fetch data from Hipolabs universities API
             const response = await axios.get(
-                "https://corsproxy.io/?http://universities.hipolabs.com/search",
+                `/.netlify/functions/universities`,
                 { params }
             );
+
             let data = response.data;
 
-            // Sort results by name or country
+            console.log("Raw API data:", data); // Debugging
+
+            // Sort results by name or country safely
+            let sortedData = [...data];
             if (sortBy === "name") {
-                data = data.sort((a, b) => a.name.localeCompare(b.name));
+                sortedData.sort((a, b) =>
+                    (a.name || "").localeCompare(b.name || "")
+                );
             } else if (sortBy === "country") {
-                data = data.sort((a, b) => a.country.localeCompare(b.country));
+                sortedData.sort((a, b) =>
+                    (a.country || "").localeCompare(b.country || "")
+                );
             }
-            setUniversities(data);
-            setCurrentPage(1); // Reset to first page on new search
+
+            setUniversities(sortedData);
+            setCurrentPage(1);
         } catch (error) {
-            // Handle API errors
             console.error("Error fetching universities:", error);
             setUniversities([]);
         } finally {
@@ -54,7 +62,7 @@ function App() {
         }
     };
 
-    // Pagination logic: calculate total pages and slice results for current page
+    // Pagination logic
     const totalPages = Math.ceil(universities.length / pageSize);
     const paginatedUniversities = universities.slice(
         (currentPage - 1) * pageSize,
@@ -63,7 +71,11 @@ function App() {
 
     return (
         <div
-            className={`min-h-screen ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"} transition-colors duration-300`}
+            className={`min-h-screen ${
+                darkMode
+                    ? "bg-gray-900 text-gray-100"
+                    : "bg-gray-50 text-gray-900"
+            } transition-colors duration-300`}
         >
             <div className="max-w-6xl mx-auto p-4">
                 <Header darkMode={darkMode} setDarkMode={setDarkMode} />
@@ -73,6 +85,7 @@ function App() {
                     darkMode={darkMode}
                     color="cyan"
                 />
+
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-12">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-cyan-500 border-opacity-50 mb-4"></div>
@@ -89,6 +102,13 @@ function App() {
                             totalCount={universities.length}
                             hasSearched={hasSearched}
                         />
+
+                        {universities.length === 0 && hasSearched && (
+                            <div className="text-center mt-8 text-red-500 font-semibold">
+                                No universities found or failed to fetch data.
+                            </div>
+                        )}
+
                         {universities.length > pageSize && (
                             <div className="flex justify-center items-center gap-2 mt-8">
                                 <button
