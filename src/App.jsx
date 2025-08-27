@@ -38,8 +38,6 @@ function App() {
 
             let data = response.data;
 
-            console.log("Raw API data:", data); // Debugging
-
             // Sort results by name or country safely
             let sortedData = [...data];
             if (sortBy === "name") {
