@@ -32,7 +32,7 @@ function App() {
 
             // Fetch data from Hipolabs universities API
             const response = await axios.get(
-                "https://corsproxy.io/?https://universities.hipolabs.com/search",
+                "https://corsproxy.io/?http://universities.hipolabs.com/search",
                 { params }
             );
             let data = response.data;
