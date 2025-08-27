@@ -3,7 +3,7 @@
 A modern, responsive React application for searching and listing universities worldwide using the free [Hipolabs Universities API](http://universities.hipolabs.com/search?).
 
 ## Deployment
-[Netlify Deployment](https://college-finder022-app.netlify.app/)
+[Netlify Deployment](https://college-finder-app.netlify.app)
 
 ## Features
 
